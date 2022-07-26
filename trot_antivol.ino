@@ -29,16 +29,19 @@ void setup() {
 
 }
 
-#define N 2
+#define N 4
 #define S 4
 uint8_t UIDs[N][S] = {
   {0xB7, 0x2A, 0x28, 0x96}, // tag jaune
+  {0xA0, 0x9B, 0xE5, 0x87}, // tag bleu
+  {0x53, 0xE3, 0xA2, 0x01}, // tag noir
   {0xE1, 0xB5, 0x13, 0xED}, // tag Startin'Box
   };
 
 void loop() {
   // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
   if ( ! mfrc522.PICC_IsNewCardPresent()) {
+    delay(100);
     return;
   }
 
@@ -49,6 +52,14 @@ void loop() {
 
   // Dump debug info about the card; PICC_HaltA() is automatically called
   //mfrc522.PICC_DumpToSerial(&(mfrc522.uid));
+  Serial.print("RFID:");
+  //Serial.println(mfrc522.uid);
+
+   for(int i=0; i<4; i++) {
+    Serial.print(mfrc522.uid.uidByte[i], HEX);
+    Serial.print(" ");
+   }
+    Serial.println();
 
   int flag=0;
   for(byte i=0; i<N; i++) {
@@ -61,6 +72,8 @@ void loop() {
 
   if (flag) { // Un tag est listé !
     digitalWrite(RELAY, !digitalRead(RELAY));
+    Serial.println("SWITCH !");
+    delay(2000);
   }
 
 
